@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html' as html;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -32,8 +33,15 @@ class SupportRequest {
   factory SupportRequest.fromJson(Map<String, dynamic> json) {
     RequestStatus parseStatus(String? val) {
       final s = (val ?? '').toLowerCase();
-      if (s.contains('progress')) return RequestStatus.inProgress;
-      if (s.contains('resolved')) return RequestStatus.resolved;
+
+      if (s.contains('progress')) {
+        return RequestStatus.inProgress;
+      }
+
+      if (s.contains('resolved')) {
+        return RequestStatus.resolved;
+      }
+
       return RequestStatus.pending;
     }
 
@@ -78,6 +86,93 @@ class _RequestScreenState extends State<RequestScreen> {
   void initState() {
     super.initState();
     fetchRequests();
+  }
+
+  void downloadCsv() {
+    final params = <String, String>{};
+
+    if (_fromDate != null) {
+      params['from'] =
+          '${_fromDate!.year}-'
+          '${_fromDate!.month.toString().padLeft(2, '0')}-'
+          '${_fromDate!.day.toString().padLeft(2, '0')}';
+    }
+
+    if (_toDate != null) {
+      params['to'] =
+          '${_toDate!.year}-'
+          '${_toDate!.month.toString().padLeft(2, '0')}-'
+          '${_toDate!.day.toString().padLeft(2, '0')}';
+    }
+
+    final uri = Uri.http(
+      'localhost',
+      '/help_desk_request/export_requests.php',
+      params,
+    );
+
+    html.window.location.href = uri.toString();
+  }
+
+  Future<void> deleteRequest(String id) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost/help_desk_request/delete_request.php'),
+        body: {'id': id},
+      );
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200 && response.body.trim() == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request deleted successfully.')),
+        );
+
+        fetchRequests();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete request.')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Connection error.')));
+    }
+  }
+
+  Future<void> _confirmDelete(SupportRequest request) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Request?'),
+          content: Text(
+            'Are you sure you want to delete request #${request.ticketId}?\n\n'
+            'This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await deleteRequest(request.ticketId);
+    }
   }
 
   Future<void> fetchRequests() async {
@@ -247,33 +342,33 @@ class _RequestScreenState extends State<RequestScreen> {
               Text(
                 'Submitted Requests & Logs',
                 style: TextStyle(
-                  fontSize: 21,
+                  fontSize: 28,
                   fontWeight: FontWeight.w700,
                   color: Color(0xff101c30),
                 ),
               ),
               SizedBox(height: 5),
-              Text(
-                'Internal registry of ICT support submissions, technician diagnostics, and resolution status structured for analysis.',
-                style: TextStyle(
-                  fontSize: 12,
-                  height: 1.5,
-                  color: Color(0xff617089),
-                ),
-              ),
+              // Text(
+              //   'Internal registry of ICT support submissions, technician diagnostics, and resolution status structured for analysis.',
+              //   style: TextStyle(
+              //     fontSize: 14,
+              //     height: 1.5,
+              //     color: Color(0xff617089),
+              //   ),
+              // ),
             ],
           ),
         ),
         ElevatedButton.icon(
-          onPressed: fetchRequests,
-          icon: const Icon(Icons.download, size: 14),
+          onPressed: downloadCsv,
+          icon: const Icon(Icons.download, size: 18),
           label: const Text(
             'Export Data',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromARGB(255, 3, 50, 124),
-            foregroundColor: Colors.white,
+            // backgroundColor: const Color.fromARGB(255, 3, 50, 124),
+            // foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
@@ -283,14 +378,14 @@ class _RequestScreenState extends State<RequestScreen> {
         SizedBox(width: 10),
         ElevatedButton.icon(
           onPressed: fetchRequests,
-          icon: const Icon(Icons.refresh, size: 14),
+          icon: const Icon(Icons.refresh, size: 18),
           label: const Text(
             'Refresh Data',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xff09162b),
-            foregroundColor: Colors.white,
+            // backgroundColor: const Color(0xff09162b),
+            // foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
@@ -340,7 +435,7 @@ class _RequestScreenState extends State<RequestScreen> {
           const SizedBox(width: 15),
           Text(
             '${filteredRequests.length} Records Selected',
-            style: const TextStyle(fontSize: 10, color: Color(0xff53647a)),
+            style: const TextStyle(fontSize: 12, color: Color(0xff53647a)),
           ),
         ],
       ),
@@ -367,10 +462,10 @@ class _RequestScreenState extends State<RequestScreen> {
       icon: const Icon(Icons.calendar_today_outlined, size: 12),
       label: Text(
         label,
-        style: const TextStyle(fontSize: 8, color: Color(0xff617089)),
+        style: const TextStyle(fontSize: 12, color: Color(0xff617089)),
       ),
       style: OutlinedButton.styleFrom(
-        foregroundColor: const Color(0xff617089),
+        foregroundColor: const Color.fromARGB(255, 105, 137, 97),
         side: const BorderSide(color: Color(0xffdfe5ec)),
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
@@ -396,7 +491,7 @@ class _RequestScreenState extends State<RequestScreen> {
               dataRowMaxHeight: 68,
               columnSpacing: 28,
               headingTextStyle: const TextStyle(
-                fontSize: 9,
+                fontSize: 15,
                 fontWeight: FontWeight.w700,
                 letterSpacing: .6,
                 color: Color(0xff64738a),
@@ -411,6 +506,7 @@ class _RequestScreenState extends State<RequestScreen> {
                 DataColumn(label: Text('REQUESTER DESIGNATION')),
                 DataColumn(label: Text('COMPLAINT DESCRIPTION')),
                 DataColumn(label: Text('DIAGNOSED BY')),
+                DataColumn(label: Text('ACTIONS')),
               ],
               rows: visibleRequests.map(_requestRow).toList(),
             ),
@@ -438,29 +534,29 @@ class _RequestScreenState extends State<RequestScreen> {
         DataCell(
           Text(
             request.ticketId,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
         ),
-        DataCell(_status(request.status)),
+        DataCell(_statusDropdown(request)),
         DataCell(
           Text(
             dateStr,
-            style: const TextStyle(fontSize: 10, color: Color(0xff697a91)),
+            style: const TextStyle(fontSize: 13, color: Color(0xff697a91)),
           ),
         ),
         DataCell(
-          Text(request.department, style: const TextStyle(fontSize: 10)),
+          Text(request.department, style: const TextStyle(fontSize: 13)),
         ),
         DataCell(
           Text(
             request.location,
-            style: const TextStyle(fontSize: 10, color: Color(0xff697a91)),
+            style: const TextStyle(fontSize: 13, color: Color(0xff697a91)),
           ),
         ),
         DataCell(
           Text(
             request.officer,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
           ),
         ),
         DataCell(
@@ -473,17 +569,72 @@ class _RequestScreenState extends State<RequestScreen> {
               request.description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 10, height: 1.4),
+              style: const TextStyle(fontSize: 13, height: 1.4),
             ),
           ),
         ),
         DataCell(
           Text(
             request.diagnosedBy,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+        ),
+        DataCell(
+          IconButton(
+            tooltip: 'Delete request',
+            icon: const Icon(
+              Icons.delete_outline,
+              size: 17,
+              color: Colors.redAccent,
+            ),
+            onPressed: () => _confirmDelete(request),
           ),
         ),
       ],
+    );
+  }
+
+  // Update Status
+  Future<void> updateStatus(String id, String status) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost/help_desk_request/update_status.php'),
+        body: {'id': id, 'status': status},
+      );
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200 && response.body.trim() == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Status updated successfully.')),
+        );
+
+        fetchRequests();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update status: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Connection error.')));
+    }
+  }
+
+  Widget _statusDropdown(SupportRequest request) {
+    return PopupMenuButton<String>(
+      tooltip: 'Change status',
+      onSelected: (newStatus) {
+        updateStatus(request.ticketId, newStatus);
+      },
+      itemBuilder: (context) => const [
+        PopupMenuItem(value: 'pending', child: Text('Pending')),
+        PopupMenuItem(value: 'in_progress', child: Text('In Progress')),
+        PopupMenuItem(value: 'resolved', child: Text('Resolved')),
+      ],
+      child: _status(request.status),
     );
   }
 
@@ -505,6 +656,7 @@ class _RequestScreenState extends State<RequestScreen> {
         const Color(0xfffff4df),
       ),
     }[status]!;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(

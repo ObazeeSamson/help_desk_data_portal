@@ -33,9 +33,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse(
-          'https://qvxdfzcq-80.uks1.devtunnels.ms/help_desk_request/verify_password.php',
-        ),
+        Uri.parse('http://localhost/help_desk_request/verify_password.php'),
         body: {'password': password},
       );
 
@@ -130,7 +128,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: Color(0xff101c30),
+              color: Color(0xff00843D),
             ),
           ),
           const SizedBox(height: 5),
@@ -174,7 +172,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 borderSide: BorderSide(color: Color(0xffe4e7eb)),
               ),
               focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xff26364e)),
+                borderSide: BorderSide(color: Color(0xff00843D), width: 2),
               ),
             ),
           ),
@@ -185,11 +183,9 @@ class _PasswordScreenState extends State<PasswordScreen> {
             child: ElevatedButton(
               onPressed: accessPortal,
 
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff09162b),
-                foregroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
+              style: const ButtonStyle(
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                 ),
               ),
               child: const Text(

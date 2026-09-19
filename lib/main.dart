@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:help_desk_data_portal/theme/app_theme.dart';
 
 import 'screens/password_screen.dart';
 
@@ -13,11 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Arial',
-        scaffoldBackgroundColor: const Color(0xfff5f7fa),
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff101b30)),
-      ),
+      theme: AppTheme.lightTheme,
       home: const PasswordScreen(),
     );
   }
