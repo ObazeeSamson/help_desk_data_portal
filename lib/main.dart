@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:help_desk_data_portal/theme/app_theme.dart';
 
-import 'screens/password_screen.dart';
+import 'screens/password_screen/password_screen.dart';
 
 void main() {
   runApp(const MyApp());

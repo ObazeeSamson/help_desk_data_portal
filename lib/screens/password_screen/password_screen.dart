@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:help_desk_data_portal/screens/request_screen.dart';
+import 'package:help_desk_data_portal/screens/request_screen/request_screen.dart';
 import 'package:http/http.dart' as http;
 
 class PasswordScreen extends StatefulWidget {
@@ -87,7 +87,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
   Widget _accessCard() {
     return Container(
-      width: 500,
+      width: 800,
       padding: const EdgeInsets.fromLTRB(26, 26, 26, 26),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -102,25 +102,6 @@ class _PasswordScreenState extends State<PasswordScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          // Container(
-          //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          //   color: const Color(0xffeef0f2),
-          //   child: const Row(
-          //     mainAxisSize: MainAxisSize.min,
-          //     children: [
-          //       Icon(Icons.lock, size: 10, color: Color(0xff26354a)),
-          //       SizedBox(width: 5),
-          //       Text(
-          //         ' ICT HELP DESK',
-          //         style: TextStyle(
-          //           fontSize: 8,
-          //           letterSpacing: 1,
-          //           color: Color(0xff526071),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
           const SizedBox(height: 14),
           const Text(
             'ICT Help Desk Data Portal',
@@ -131,28 +112,23 @@ class _PasswordScreenState extends State<PasswordScreen> {
               color: Color(0xff00843D),
             ),
           ),
-          const SizedBox(height: 5),
-          const Text(
-            'Enter the access password to continue.',
-            style: TextStyle(fontSize: 13, color: Color(0xff6e7784)),
-          ),
+
           const SizedBox(height: 26),
 
-          const SizedBox(height: 7),
           TextField(
             controller: passwordController,
             obscureText: obscurePassword,
             onSubmitted: (_) => accessPortal(),
-            style: const TextStyle(fontSize: 10, color: Color(0xff3c4a5d)),
+            style: const TextStyle(fontSize: 15, color: Color(0xff3c4a5d)),
             decoration: InputDecoration(
               hintText: 'Enter access password',
               hintStyle: const TextStyle(
-                fontSize: 10,
+                fontSize: 15,
                 color: Color(0xff8993a0),
               ),
               prefixIcon: const Icon(
                 Icons.lock_outline,
-                size: 14,
+                size: 15,
                 color: Color(0xff667589),
               ),
               suffixIcon: IconButton(
@@ -163,7 +139,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                   obscurePassword
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  size: 14,
+                  size: 15,
                   color: const Color(0xff667589),
                 ),
               ),
@@ -182,7 +158,6 @@ class _PasswordScreenState extends State<PasswordScreen> {
             height: 34,
             child: ElevatedButton(
               onPressed: accessPortal,
-
               style: const ButtonStyle(
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(borderRadius: BorderRadius.zero),
@@ -190,7 +165,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
               ),
               child: const Text(
                 'Access Portal',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -200,7 +175,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 10),
             color: const Color(0xfff1f3f5),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Row(
                   children: [
@@ -212,10 +187,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
                     SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        'Restricted to authorized CUS ICT personnel only.\nSubmissions routed from the mobile help-desk app.',
+                        'Restricted to authorized ICT personnel only. Submissions routed from the mobile help-desk app.',
                         style: TextStyle(
-                          fontSize: 9,
-                          height: 1.4,
+                          fontSize: 11,
+                          height: 1.0,
                           color: Color(0xff5e6d7e),
                         ),
                       ),
@@ -223,27 +198,6 @@ class _PasswordScreenState extends State<PasswordScreen> {
                   ],
                 ),
                 SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'SYS-NODE: CUS-PROD-04',
-                      style: TextStyle(
-                        fontSize: 7,
-                        letterSpacing: .7,
-                        color: Color(0xff657285),
-                      ),
-                    ),
-                    Text(
-                      'TLS 1.3 / AUTH REQ',
-                      style: TextStyle(
-                        fontSize: 7,
-                        letterSpacing: .7,
-                        color: Color(0xff657285),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
