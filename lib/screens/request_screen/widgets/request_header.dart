@@ -23,19 +23,7 @@ class RequestHeader extends StatelessWidget {
       child: Row(
         children: [
           // ── Brand Logo Icon ───────────────────────────────────────────────
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: const Icon(
-              Icons.support_agent_rounded,
-              color: Colors.white,
-              size: 17,
-            ),
-          ),
+
           const SizedBox(width: 10),
           // ── Portal Title & Tag ────────────────────────────────────────────
           Text(
@@ -47,32 +35,19 @@ class RequestHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-            decoration: BoxDecoration(
-              color: AppColors.primarySurface,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              'DATA PORTAL',
-              style: GoogleFonts.inter(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.9,
-                color: AppColors.primary,
-              ),
+          Text(
+            'DATA PORTAL',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.9,
+              color: AppColors.primary,
             ),
           ),
+
           const Spacer(),
           // ── Security Level Notice ─────────────────────────────────────────
-          Text(
-            'AUTHORIZED STAFF ONLY',
-            style: GoogleFonts.inter(
-              fontSize: 9,
-              letterSpacing: 0.8,
-              color: AppColors.textMuted,
-            ),
-          ),
+
           const SizedBox(width: 20),
           // ── Lock / Logout Button ──────────────────────────────────────────
           OutlinedButton.icon(
@@ -81,10 +56,13 @@ class RequestHeader extends StatelessWidget {
             icon: const Icon(Icons.lock_outline, size: 13),
             label: const Text('Lock Portal'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.textSecondary,
+              foregroundColor: const Color.fromARGB(255, 226, 68, 68),
               side: const BorderSide(color: AppColors.border),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              textStyle: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+              textStyle: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(6),
               ),

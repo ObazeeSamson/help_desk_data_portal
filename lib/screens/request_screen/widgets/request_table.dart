@@ -16,6 +16,7 @@ class RequestTable extends StatelessWidget {
     super.key,
     required this.requests,
     required this.onStatusChanged,
+    required this.onAssignTechnician,
     required this.onDelete,
   });
 
@@ -23,7 +24,10 @@ class RequestTable extends StatelessWidget {
   final List<SupportRequest> requests;
 
   /// Callback to change a ticket's status on the backend.
-  final void Function(String id, String status) onStatusChanged;
+  final void Function(SupportRequest request, String status) onStatusChanged;
+
+  /// Callback to assign or reassign a technician.
+  final void Function(SupportRequest request) onAssignTechnician;
 
   /// Callback to confirm and delete a ticket.
   final void Function(SupportRequest request) onDelete;
@@ -39,7 +43,7 @@ class RequestTable extends StatelessWidget {
     'DESIGNATION',
     'COMPLAINT DESCRIPTION',
     'DIAGNOSED BY',
-    'ACTIONS',
+    '',
   ];
 
   @override
@@ -70,7 +74,9 @@ class RequestTable extends StatelessWidget {
                       dataRowMaxHeight: 70,
                       columnSpacing: 24,
                       horizontalMargin: 16,
-                      headingRowColor: WidgetStateProperty.all(AppColors.borderLight),
+                      headingRowColor: WidgetStateProperty.all(
+                        AppColors.borderLight,
+                      ),
                       headingTextStyle: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -93,6 +99,7 @@ class RequestTable extends StatelessWidget {
                           request: requests[i],
                           isEven: i.isEven,
                           onStatusChanged: onStatusChanged,
+                          onAssignTechnician: onAssignTechnician,
                           onDelete: () => onDelete(requests[i]),
                         ),
                       ),
@@ -124,10 +131,7 @@ class RequestTable extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'No requests match the current filters.',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textMuted,
-            ),
+            style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
           ),
         ],
       ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html' as html;
 
 import 'package:help_desk_data_portal/constants.dart';
 import 'package:help_desk_data_portal/models/support_request.dart';
@@ -67,15 +66,58 @@ class HelpDeskService {
   /// Sends a POST request to `update_status.php` with:
   /// - [id]: The database record ID of the ticket.
   /// - [status]: The target status string ('pending', 'in_progress', or 'resolved').
+  /// - [diagnosedBy]: Optional technician name assigned to diagnose/resolve the issue.
   /// Throws an [Exception] if update fails on the backend.
-  static Future<void> updateStatus(String id, String status) async {
+  static Future<void> updateStatus(
+    String id,
+    String status, {
+    String? diagnosedBy,
+  }) async {
+    final body = <String, String>{
+      'id': id,
+      'status': status,
+    };
+    if (diagnosedBy != null && diagnosedBy.trim().isNotEmpty) {
+      body['diagnosed_by'] = diagnosedBy.trim();
+    }
+
     final response = await http.post(
       Uri.parse('$_base/update_status.php'),
-      body: {'id': id, 'status': status},
+      body: body,
     );
 
     if (response.statusCode != 200 || response.body.trim() != 'success') {
       throw Exception('Failed to update status: ${response.body}');
+    }
+  }
+
+  /// Directly assigns or reassigns a technician to a support ticket.
+  ///
+  /// Sends a POST request to `update_status.php` with:
+  /// - [id]: The database record ID of the ticket.
+  /// - [diagnosedBy]: Full name of the technician being assigned.
+  /// - [status]: Optional status to maintain.
+  /// Throws an [Exception] if assignment fails on the backend.
+  static Future<void> assignTechnician(
+    String id,
+    String diagnosedBy, {
+    String? status,
+  }) async {
+    final body = <String, String>{
+      'id': id,
+      'diagnosed_by': diagnosedBy.trim(),
+    };
+    if (status != null && status.isNotEmpty) {
+      body['status'] = status;
+    }
+
+    final response = await http.post(
+      Uri.parse('$_base/update_status.php'),
+      body: body,
+    );
+
+    if (response.statusCode != 200 || response.body.trim() != 'success') {
+      throw Exception('Server returned ${response.statusCode}: ${response.body}');
     }
   }
 
@@ -94,39 +136,4 @@ class HelpDeskService {
     }
   }
 
-  // ── CSV Data Export ───────────────────────────────────────────────────────
-
-  /// Triggers a browser-initiated file download for a CSV report of tickets.
-  ///
-  /// Optional date filtering parameters:
-  /// - [from]: Earliest submission date to include.
-  /// - [to]: Latest submission date to include.
-  ///
-  /// Constructs the query parameters and navigates the browser window to
-  /// `export_requests.php`, causing the browser to download the generated CSV file.
-  static void downloadCsv({DateTime? from, DateTime? to}) {
-    final params = <String, String>{};
-
-    // Format start date filter as YYYY-MM-DD
-    if (from != null) {
-      params['from'] =
-          '${from.year}-'
-          '${from.month.toString().padLeft(2, '0')}-'
-          '${from.day.toString().padLeft(2, '0')}';
-    }
-
-    // Format end date filter as YYYY-MM-DD
-    if (to != null) {
-      params['to'] =
-          '${to.year}-'
-          '${to.month.toString().padLeft(2, '0')}-'
-          '${to.day.toString().padLeft(2, '0')}';
-    }
-
-    final uri = Uri.parse('${AppConstants.apiBase}/export_requests.php')
-        .replace(queryParameters: params.isEmpty ? null : params);
-
-    // Direct browser navigation triggers the Content-Disposition attachment download
-    html.window.location.href = uri.toString();
-  }
 }

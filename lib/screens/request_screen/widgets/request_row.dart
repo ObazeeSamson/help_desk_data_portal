@@ -9,7 +9,7 @@ import 'package:help_desk_data_portal/theme/app_theme.dart';
 ///
 /// Implements alternating zebra-striping colors and formats each individual column:
 /// - ID, Status dropdown, Creation Date, Department, Room / Ext, Officer,
-///   Designation, Truncated Description, Diagnosed By, and Delete Action.
+///   Designation, Truncated Description, Diagnosed By (Interactive), and Delete Action.
 class RequestRow extends DataRow {
   // Private const constructor forwarding to super DataRow.
   const RequestRow._({required super.cells, super.color});
@@ -20,11 +20,13 @@ class RequestRow extends DataRow {
   /// - [request]: The ticket data model.
   /// - [isEven]: Boolean indicating whether this row has an even index (used for zebra-striping).
   /// - [onStatusChanged]: Callback to mutate the ticket's resolution status.
+  /// - [onAssignTechnician]: Callback to open the technician assignment dialog.
   /// - [onDelete]: Callback triggered when the delete trash-can button is clicked.
   factory RequestRow.build({
     required SupportRequest request,
     required bool isEven,
-    required void Function(String id, String status) onStatusChanged,
+    required void Function(SupportRequest request, String status) onStatusChanged,
+    required void Function(SupportRequest request) onAssignTechnician,
     required VoidCallback onDelete,
   }) {
     // Format timestamp as YYYY-MM-DD
@@ -129,15 +131,92 @@ class RequestRow extends DataRow {
           ),
         ),
 
-        // ── 9. Diagnosed By (Technician) ────────────────────────────────────
+        // ── 9. Diagnosed By (Interactive Technician Assignment) ─────────────
         DataCell(
-          Text(
-            request.diagnosedBy,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+          Builder(
+            builder: (context) {
+              final raw = request.diagnosedBy.trim().toLowerCase();
+              final isAssigned =
+                  raw.isNotEmpty && raw != 'unassigned' && raw != 'null';
+
+              if (!isAssigned) {
+                return Tooltip(
+                  message: 'Assign a technician',
+                  child: InkWell(
+                    onTap: () => onAssignTechnician(request),
+                    borderRadius: BorderRadius.circular(6),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySurface,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.add_rounded,
+                            size: 14,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Assign',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              return Tooltip(
+                message: 'Click to reassign technician',
+                child: InkWell(
+                  onTap: () => onAssignTechnician(request),
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 2,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            request.diagnosedBy,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.edit_outlined,
+                          size: 13,
+                          color: AppColors.textMuted,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
 

@@ -9,7 +9,7 @@ import 'package:help_desk_data_portal/theme/app_theme.dart';
 ///
 /// Wraps a [StatusBadge] with a popup menu containing:
 /// - Pending
-/// - In Progress
+/// - In Progress (triggers technician assignment prompt)
 /// - Resolved
 class StatusDropdown extends StatelessWidget {
   const StatusDropdown({
@@ -22,15 +22,15 @@ class StatusDropdown extends StatelessWidget {
   final SupportRequest request;
 
   /// Callback fired when an option is selected from the popup menu, passing
-  /// the ticket ID and backend status string.
-  final void Function(String id, String status) onStatusChanged;
+  /// the ticket model and target backend status string.
+  final void Function(SupportRequest request, String status) onStatusChanged;
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       tooltip: 'Change status',
       // Trigger callback with selected backend status value
-      onSelected: (newStatus) => onStatusChanged(request.ticketId, newStatus),
+      onSelected: (newStatus) => onStatusChanged(request, newStatus),
       offset: const Offset(0, 32),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       itemBuilder: (context) => [

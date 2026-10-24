@@ -52,15 +52,17 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
       if (success) {
         // Navigate to the main requests dashboard
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const RequestScreen()),
-        );
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const RequestScreen()));
       } else {
         _showSnack('Incorrect access password.', isError: true);
       }
     } catch (e) {
       if (!mounted) return;
-      _showSnack('Connection error. Check that the backend server is reachable.', isError: true);
+      _showSnack(
+        'Connection error. Check that the backend server is reachable.',
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -97,7 +99,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 60,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -124,7 +129,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
   /// Builds the elevated modal card containing header, form, and notice banner.
   Widget _buildCard() {
     return Container(
-      width: 420,
+      width: 450,
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(10),
@@ -143,44 +148,31 @@ class _PasswordScreenState extends State<PasswordScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(28, 28, 28, 22),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AppColors.border)),
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Brand icon and title
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.support_agent_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'ICT Help Desk',
+                          'ICT HELP DESK',
+                          textAlign: TextAlign.center,
                           style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary,
                           ),
                         ),
+                        const SizedBox(width: 7),
                         Text(
                           'DATA PORTAL',
+                          textAlign: TextAlign.center,
                           style: GoogleFonts.inter(
-                            fontSize: 9,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1.0,
                             color: AppColors.primary,
@@ -190,16 +182,8 @@ class _PasswordScreenState extends State<PasswordScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 18),
-                Text(
-                  'Portal Access',
-                  style: GoogleFonts.inter(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
+
+                const SizedBox(height: 25),
                 Text(
                   'Enter your access password to view the request dashboard.',
                   style: GoogleFonts.inter(
@@ -214,18 +198,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
           // ── Form Body (Password input field & Access button) ──────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(28, 24, 28, 24),
+            padding: const EdgeInsets.fromLTRB(28, 0, 28, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Access Password',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: _passwordController,

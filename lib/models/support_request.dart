@@ -7,7 +7,19 @@ enum RequestStatus {
   inProgress,
 
   /// Request is newly submitted and awaiting technician assignment or action.
-  pending,
+  pending;
+
+  /// Serializes the status enum to the string expected by the MySQL backend.
+  String get backendValue {
+    switch (this) {
+      case RequestStatus.inProgress:
+        return 'in_progress';
+      case RequestStatus.resolved:
+        return 'resolved';
+      case RequestStatus.pending:
+        return 'pending';
+    }
+  }
 }
 
 /// Domain model representing a single ICT Help Desk support ticket.
